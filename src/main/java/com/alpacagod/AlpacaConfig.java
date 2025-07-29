@@ -8,10 +8,10 @@ import net.runelite.client.config.ConfigItem;
 public interface AlpacaConfig extends Config
 {
 	@ConfigItem(
-			keyName = "petCount",
-			name = "Pet Count",
-			description = "How many times you have petted the alpaca.",
-			hidden = true
+		keyName = "petCount",
+		name = "Pet Count",
+		description = "How many times you have petted the alpaca.",
+		hidden = true
 	)
 	default int petCount()
 	{

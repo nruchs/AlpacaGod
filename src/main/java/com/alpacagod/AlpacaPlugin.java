@@ -18,9 +18,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @Slf4j
 @PluginDescriptor(
-		name = "Pet The Alpaca",
-		description = "Allows you to pet adorable alpacas.",
-		tags = {"alpaca", "fun", "meme", "pet"}
+	name = "Pet The Alpaca",
+	description = "Allows you to pet adorable alpacas.",
+	tags = {"alpaca", "fun", "meme", "pet"}
 )
 public class AlpacaPlugin extends Plugin
 {
@@ -37,26 +37,26 @@ public class AlpacaPlugin extends Plugin
 	private ChatMessageManager chatMessageManager;
 
 	private static final String[] COMMON_MESSAGES  = {
-			"You pet the alpaca. It hums happily.",
-			"The alpaca seems to enjoy the petting.",
-			"You gently stroke the alpaca's fur. So fluffy!",
-			"The alpaca blinks slowly. A sign of trust.",
-			"The alpaca stares into your soul.",
-			"A soft hum comes from the alpaca. It likes you.",
-			"The alpaca pretends you don't exist.",
-			"You are judged silently by the alpaca.",
-			"You feel a warm alpaca aura surround you.",
-			"A sparkle appears in the alpaca’s eye.",
-			"You have unlocked the alpaca’s trust.",
-			"The alpaca moonwalks away dramatically.",
-			"The alpaca attempts to lick your elbow.",
-			"The alpaca breaks the fourth wall."
+		"You pet the alpaca. It hums happily.",
+		"The alpaca seems to enjoy the petting.",
+		"You gently stroke the alpaca's fur. So fluffy!",
+		"The alpaca blinks slowly. A sign of trust.",
+		"The alpaca stares into your soul.",
+		"A soft hum comes from the alpaca. It likes you.",
+		"The alpaca pretends you don't exist.",
+		"You are judged silently by the alpaca.",
+		"You feel a warm alpaca aura surround you.",
+		"A sparkle appears in the alpaca’s eye.",
+		"You have unlocked the alpaca’s trust.",
+		"The alpaca moonwalks away dramatically.",
+		"The alpaca attempts to lick your elbow.",
+		"The alpaca breaks the fourth wall."
 	};
 
 	private static final String[] RARE_MESSAGES = {
-			"The alpaca points to the sky. You see nothing.",
-			"The alpaca enters stealth mode. You can still see it.",
-			"The alpaca reveals an ancient map. It's blank."
+		"The alpaca points to the sky. You see nothing.",
+		"The alpaca enters stealth mode. You can still see it.",
+		"The alpaca reveals an ancient map. It's blank."
 	};
 
 	private int petCount = 0;
@@ -101,10 +101,10 @@ public class AlpacaPlugin extends Plugin
 			if (!petOptionExists)
 			{
 				client.createMenuEntry(-1)
-						.setOption("Pet")
-						.setTarget(event.getTarget())
-						.setType(MenuAction.RUNELITE)
-						.onClick(e -> petAlpaca());
+					.setOption("Pet")
+					.setTarget(event.getTarget())
+					.setType(MenuAction.RUNELITE)
+					.onClick(e -> petAlpaca());
 			}
 		}
 	}
