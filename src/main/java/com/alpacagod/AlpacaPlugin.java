@@ -101,10 +101,10 @@ public class AlpacaPlugin extends Plugin
 			if (!petOptionExists)
 			{
 				client.createMenuEntry(-1)
-					.setOption("Pet")
-					.setTarget(event.getTarget())
-					.setType(MenuAction.RUNELITE)
-					.onClick(e -> petAlpaca());
+				.setOption("Pet")
+				.setTarget(event.getTarget())
+				.setType(MenuAction.RUNELITE)
+				.onClick(e -> petAlpaca());
 			}
 		}
 	}
@@ -151,9 +151,9 @@ public class AlpacaPlugin extends Plugin
 		}
 
 		chatMessageManager.queue(QueuedMessage.builder()
-			.type(ChatMessageType.GAMEMESSAGE)
-			.runeLiteFormattedMessage(message)
-			.build());
+		.type(ChatMessageType.GAMEMESSAGE)
+		.runeLiteFormattedMessage(message)
+		.build());
 
 		savePetCount();
 	}
