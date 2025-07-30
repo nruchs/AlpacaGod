@@ -17,6 +17,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.events.GameTick;
+import net.runelite.client.events.ConfigChanged; // Import ConfigChanged event
 
 @Slf4j
 @PluginDescriptor(
@@ -30,7 +31,7 @@ public class AlpacaPlugin extends Plugin
     private Client client;
 
     @Inject
-    private AlpacaConfig config;
+    private AlpacaConfig config; // Inject the AlpacaConfig interface
 
     @Inject
     private ConfigManager configManager;
@@ -64,7 +65,11 @@ public class AlpacaPlugin extends Plugin
     private static final String[] INSTIGATING_MESSAGES = {
             "Look, an alpaca! Maybe I should pet it...",
             "That alpaca looks friendly. Does it like cuddles?",
-            "This alpaca needs a good pet. Don't you think?"
+            "This alpaca needs a good pet. Don't you think?",
+            "This alpaca looks like it could use a good scratch behind the ears.",
+            "That alpaca is practically begging for a pet!",
+            "What a majestic creature! A pet would surely be appreciated.",
+            "My hand is itching to pet that alpaca. Is yours?"
     };
 
     private static final int MESSAGE_COOLDOWN_TICKS = 50;
@@ -77,6 +82,8 @@ public class AlpacaPlugin extends Plugin
     protected void startUp() throws Exception
     {
         petCount = config.petCount();
+        // Update the pet count display when the plugin starts
+        updatePetCountDisplay();
         log.info("Pet The Alpaca started! Loaded petCount = {}", petCount);
     }
 
@@ -90,6 +97,12 @@ public class AlpacaPlugin extends Plugin
     private void savePetCount()
     {
         configManager.setConfiguration("alpacagod", "petCount", petCount);
+    }
+
+    // Method to update the config item that displays the pet count
+    private void updatePetCountDisplay()
+    {
+        configManager.setConfiguration("alpacagod", "currentPetCountDisplay", String.valueOf(petCount));
     }
 
     @Subscribe
@@ -151,6 +164,31 @@ public class AlpacaPlugin extends Plugin
         }
     }
 
+    @Subscribe
+    public void onConfigChanged(ConfigChanged event)
+    {
+        if (!event.getGroup().equals("alpacagod"))
+        {
+            return;
+        }
+
+        if (event.getKey().equals("resetPetCount"))
+        {
+            if (config.resetPetCount())
+            {
+                petCount = 0;
+                savePetCount();
+                updatePetCountDisplay();
+                chatMessageManager.queue(QueuedMessage.builder()
+                        .type(ChatMessageType.GAMEMESSAGE)
+                        .runeLiteFormattedMessage("Your alpaca pet count has been reset to 0.")
+                        .build());
+
+                configManager.setConfiguration("alpacagod", "resetPetCount", false);
+            }
+        }
+    }
+
     private String getRandomMessage()
     {
         double chance = Math.random();
@@ -193,7 +231,12 @@ public class AlpacaPlugin extends Plugin
                 message = "You feel an ancient bond with the alpaca.";
                 break;
             default:
-                message = String.format("%s (Total pets: %d)", getRandomMessage(), petCount);
+
+                if (petCount % 10 == 0 && petCount > 5) {
+                    message = String.format("%s (Total pets: %d)", getRandomMessage(), petCount);
+                } else {
+                    message = getRandomMessage();
+                }
                 break;
         }
 
@@ -202,6 +245,8 @@ public class AlpacaPlugin extends Plugin
                 .runeLiteFormattedMessage(message)
                 .build());
 
+        savePetCount();
+        updatePetCountDisplay();
     }
 
     @Provides
