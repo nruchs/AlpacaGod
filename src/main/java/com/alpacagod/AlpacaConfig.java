@@ -21,10 +21,15 @@ public interface AlpacaConfig extends Config
             description = "Total number of times an alpaca has been petted.",
             hidden = true
     )
-    default int petCount()
-    {
-        return 0;
-    }
+    int petCount();
+
+    @ConfigItem(
+            keyName = "petCount",
+            name = "Pet Count",
+            description = "",
+            hidden = true
+    )
+    void setPetCount(int value);
 
 
     @ConfigItem(

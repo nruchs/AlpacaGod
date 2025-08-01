@@ -17,7 +17,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.api.events.GameTick;
-import net.runelite.client.events.ConfigChanged; // Import ConfigChanged event
+import net.runelite.client.events.ConfigChanged;
 
 @Slf4j
 @PluginDescriptor(
@@ -31,7 +31,7 @@ public class AlpacaPlugin extends Plugin
     private Client client;
 
     @Inject
-    private AlpacaConfig config; // Inject the AlpacaConfig interface
+    private AlpacaConfig config;
 
     @Inject
     private ConfigManager configManager;
@@ -53,13 +53,19 @@ public class AlpacaPlugin extends Plugin
             "You have unlocked the alpaca’s trust.",
             "The alpaca moonwalks away dramatically.",
             "The alpaca attempts to lick your elbow.",
-            "The alpaca breaks the fourth wall."
+            "The alpaca breaks the fourth wall.",
+            "A single strand of wool sticks to your hand. A memento.",
+            "The alpaca's fur feels like a cloud.",
+            "The alpaca tries to nibble on your fingers, but thinks better of it.",
+            "You try to pick up the alpaca, but it's surprisingly heavy."
     };
 
     private static final String[] RARE_MESSAGES = {
             "The alpaca points to the sky. You see nothing.",
             "The alpaca enters stealth mode. You can still see it.",
-            "The alpaca reveals an ancient map. It's blank."
+            "The alpaca reveals an ancient map. It's blank.",
+            "The alpaca whispers something inaudible. Was that a prophecy?",
+            "You feel a strange energy from the alpaca. You wonder if there are more secrets to be discovered..."
     };
 
     private static final String[] INSTIGATING_MESSAGES = {
@@ -69,7 +75,8 @@ public class AlpacaPlugin extends Plugin
             "This alpaca looks like it could use a good scratch behind the ears.",
             "That alpaca is practically begging for a pet!",
             "What a majestic creature! A pet would surely be appreciated.",
-            "My hand is itching to pet that alpaca. Is yours?"
+            "My hand is itching to pet that alpaca. Is yours?",
+            "I wonder what petting an alpaca feels like. Time to find out!"
     };
 
     private static final int MESSAGE_COOLDOWN_TICKS = 50;
@@ -82,7 +89,6 @@ public class AlpacaPlugin extends Plugin
     protected void startUp() throws Exception
     {
         petCount = config.petCount();
-        // Update the pet count display when the plugin starts
         updatePetCountDisplay();
         log.info("Pet The Alpaca started! Loaded petCount = {}", petCount);
     }
@@ -90,16 +96,10 @@ public class AlpacaPlugin extends Plugin
     @Override
     protected void shutDown() throws Exception
     {
-        savePetCount();
+        config.setPetCount(petCount);
         log.info("Pet The Alpaca stopped! Saved petCount = {}", petCount);
     }
 
-    private void savePetCount()
-    {
-        configManager.setConfiguration("alpacagod", "petCount", petCount);
-    }
-
-    // Method to update the config item that displays the pet count
     private void updatePetCountDisplay()
     {
         configManager.setConfiguration("alpacagod", "currentPetCountDisplay", String.valueOf(petCount));
@@ -113,7 +113,7 @@ public class AlpacaPlugin extends Plugin
         if (target.equalsIgnoreCase("Alpaca") || target.equalsIgnoreCase("Alpaca cria"))
         {
             boolean petOptionExists = false;
-            for (MenuEntry entry : client.getMenuEntries())
+            for (MenuEntry entry : client.getMenu().getMenuEntries())
             {
                 if (entry.getOption().equals("Pet") && (Text.removeTags(entry.getTarget()).equalsIgnoreCase("Alpaca") || Text.removeTags(entry.getTarget()).equalsIgnoreCase("Alpaca cria")))
                 {
@@ -124,7 +124,7 @@ public class AlpacaPlugin extends Plugin
 
             if (!petOptionExists)
             {
-                client.createMenuEntry(-1)
+                client.getMenu().createMenuEntry(-1)
                         .setOption("Pet")
                         .setTarget(event.getTarget())
                         .setType(MenuAction.RUNELITE)
@@ -146,7 +146,7 @@ public class AlpacaPlugin extends Plugin
             return;
         }
 
-        for (NPC npc : client.getNpcs())
+        for (NPC npc : client.getTopLevelWorldView().npcs())
         {
             if (npc.getName() != null && (npc.getName().equalsIgnoreCase("Alpaca") || npc.getName().equalsIgnoreCase("Alpaca cria")))
             {
@@ -177,7 +177,7 @@ public class AlpacaPlugin extends Plugin
             if (config.resetPetCount())
             {
                 petCount = 0;
-                savePetCount();
+                config.setPetCount(petCount);
                 updatePetCountDisplay();
                 chatMessageManager.queue(QueuedMessage.builder()
                         .type(ChatMessageType.GAMEMESSAGE)
@@ -211,7 +211,7 @@ public class AlpacaPlugin extends Plugin
 
         if (client.getLocalPlayer() != null) {
             client.getLocalPlayer().setAnimation(827);
-            client.getLocalPlayer().setActionFrame(0);
+            client.getLocalPlayer().setAnimationFrame(0);
         }
 
         String message;
@@ -230,6 +230,9 @@ public class AlpacaPlugin extends Plugin
             case 100:
                 message = "You feel an ancient bond with the alpaca.";
                 break;
+            case 200:
+                message = "The alpaca glows with a gentle light. You have achieved maximum fluffiness.";
+                break;
             default:
 
                 if (petCount % 10 == 0 && petCount > 5) {
@@ -245,7 +248,7 @@ public class AlpacaPlugin extends Plugin
                 .runeLiteFormattedMessage(message)
                 .build());
 
-        savePetCount();
+        config.setPetCount(petCount);
         updatePetCountDisplay();
     }
 
